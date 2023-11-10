@@ -4,16 +4,28 @@ services:
 
     mongodb:
       build:
-        context:
-        dockerfile: .Dockerfile
-      container_name: mongodb
+        context: mongodb
+        dockerfile: ./Dockerfile
       ports:
         - "27017:27017"
       volumes:
-        - mongodb/mongodb_data:/data/db
+        - ./mongodb/mongodb_data:/data/db
       restart: unless-stopped
       environment:
         MONGO_INITDB_DATABASE: dbadmin
         MONGO_INITDB_ROOT_USERNAME: root
         MONGO_INITDB_ROOT_PASSWORD: example
+      depends_on:
+        - nginx
 
+    nginx:
+      build:
+        context: ./nginx/
+        dockerfile: ./Dockerfile
+      hostname: nginx
+      ports:
+        - "80:80"
+      restart: unless-stopped
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/nginx/log:/var/log/nginx
